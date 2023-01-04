@@ -17,6 +17,7 @@
 <body>
     <script>
         const positions = []
+        let totalDistance = 0
 
         const pushPos = pos => {
             if (positions.length == 0) {
@@ -29,6 +30,11 @@
             const prev = positions[positions.length - 1]
             if (pos.lat == prev.lat && pos.long == prev.long) return;
             positions.push(pos)
+
+            // add to total distance travelled
+            const a = positions[positions.length - 1]
+            const b = positions[positions.length - 2]
+            totalDistance += distance(a, b)
         }
 
         const distance = (a, b) => {
@@ -43,7 +49,6 @@
             const dt = (a.time - b.time) / 1000
             const dp = distance(a, b)
 
-            const totalDistance = 0 // TODO - keep track of this every time we push a pos
             const totaltime = (positions[positions.length - 1].time - positions[0].time) / 1000
 
             document.body.innerText = ''
