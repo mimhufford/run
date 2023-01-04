@@ -18,27 +18,27 @@
     <script>
         const positions = []
         let totalDistance = 0
-
+        
         const pushPos = pos => {
             if (positions.length == 0) {
                 positions.push(pos)
                 return
             }
-
+            
             // first two readings seem to be the same, not sure if this happens more later
             // either way, only push positions if they're different to the previous one
             const prev = positions[positions.length - 1]
             if (pos.lat == prev.lat && pos.lon == prev.lon) return;
             positions.push(pos)
-
+            
             // add to total distance travelled
             const a = positions[positions.length - 1]
             const b = positions[positions.length - 2]
             totalDistance += distance(a, b)
         }
 
-        const square = n => Math.pos(n, 2)
-
+        const square = n => Math.pow(n, 2)
+        
         const distance = (a, b) => {
             const lon1 = a.lon * Math.PI / 180
             const lon2 = b.lon * Math.PI / 180
@@ -46,17 +46,17 @@
             const lat2 = b.lat * Math.PI / 180
             return 12742 * Math.asin(Math.sqrt(square(Math.sin((lat2 - lat1) / 2)) + Math.cos(lat1) * Math.cos(lat2) * square(Math.sin((lon2 - lon1) / 2))))
         }
-
+        
         const outputStats = () => {
             if (positions.length < 2) return
-
+            
             const a = positions[positions.length - 1]
             const b = positions[positions.length - 2]
             const dt = (a.time - b.time) / 1000
             const dp = distance(a, b)
-
+            
             const totaltime = (positions[positions.length - 1].time - positions[0].time) / 1000
-
+            
             document.body.innerText = ''
             document.body.innerText += `Time: ${dt}s\n`
             document.body.innerText += `Distance: ${dp}km\n`
