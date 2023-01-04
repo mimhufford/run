@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Run</title>
+    <style>
+        * {
+            font-family: monospace;
+            font-size: xx-large;
+        }
+    </style>
+</head>
+
+<body>
+    <script>
+        const positions = []
+
+        const pushPos = pos => {
+            if (positions.length == 0) {
+                positions.push(pos)
+                return
+            }
+
+            // first two readings seem to be the same, not sure if this happens more later
+            // either way, only push positions if they're different to the previous one
+            const prev = positions[positions.length - 1]
+            if (pos.lat == prev.lat && pos.long == prev.long) return;
+            positions.push(pos)
+        }
+
+        const distance = (a, b) => {
+            return Math.sqrt(Math.pow(a.lat - b.lat, 2) + Math.pow(a.long - b.long, 2))
+        }
+
+        const outputStats = () => {
+            if (positions.length < 2) return
+
+            const a = positions[positions.length - 1]
+            const b = positions[positions.length - 2]
+            const dt = (a.time - b.time) / 1000
+            const dp = distance(a, b)
+
+            const totalDistance = 0 // TODO - keep track of this every time we push a pos
+            const totaltime = (positions[positions.length - 1].time - positions[0].time) / 1000
+
+            document.body.innerText = ''
+            document.body.innerText += `Time: ${dt}s\n`
+            document.body.innerText += `Distance: ${dp}\n`
+            document.body.innerText += `Total Time: ${totaltime}s\n`
+            document.body.innerText += `Total Distance: ${totalDistance}\n`
+        }
+
+        navigator.geolocation.watchPosition(pos => {
+            pushPos({ lat: pos.coords.latitude, long: pos.coords.longitude, time: pos.timestamp })
+            outputStats()
+        })
+    </script>
+</body>
+
+</html>
