@@ -28,7 +28,7 @@
             // first two readings seem to be the same, not sure if this happens more later
             // either way, only push positions if they're different to the previous one
             const prev = positions[positions.length - 1]
-            if (pos.lat == prev.lat && pos.long == prev.long) return;
+            if (pos.lat == prev.lat && pos.lon == prev.lon) return;
             positions.push(pos)
 
             // add to total distance travelled
@@ -37,8 +37,14 @@
             totalDistance += distance(a, b)
         }
 
+        const square = n => Math.pos(n, 2)
+
         const distance = (a, b) => {
-            return Math.sqrt(Math.pow(a.lat - b.lat, 2) + Math.pow(a.long - b.long, 2))
+            const lon1 = a.lon * Math.PI / 180
+            const lon2 = b.lon * Math.PI / 180
+            const lat1 = a.lat * Math.PI / 180
+            const lat2 = b.lat * Math.PI / 180
+            return 12742 * Math.asin(Math.sqrt(square(Math.sin((lat2 - lat1) / 2)) + Math.cos(lat1) * Math.cos(lat2) * square(Math.sin((lon2 - lon1) / 2))))
         }
 
         const outputStats = () => {
@@ -53,13 +59,13 @@
 
             document.body.innerText = ''
             document.body.innerText += `Time: ${dt}s\n`
-            document.body.innerText += `Distance: ${dp}\n`
+            document.body.innerText += `Distance: ${dp}km\n`
             document.body.innerText += `Total Time: ${totaltime}s\n`
-            document.body.innerText += `Total Distance: ${totalDistance}\n`
+            document.body.innerText += `Total Distance: ${totalDistance}km\n`
         }
 
         navigator.geolocation.watchPosition(pos => {
-            pushPos({ lat: pos.coords.latitude, long: pos.coords.longitude, time: pos.timestamp })
+            pushPos({ lat: pos.coords.latitude, lon: pos.coords.longitude, time: pos.timestamp })
             outputStats()
         })
     </script>
