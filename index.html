@@ -19,9 +19,10 @@
     <button id="action" onclick="action()">Start</button>
     <script>
         let state = "stopped"
-        let gps = 0
-        let positions = []
-        let totalDistance = 0
+        let gps, positions, totalDistance, nextUpdate
+        const updateFreqKm = 0.1
+        
+        const speak = text => window.speechSynthesis.speak(new SpeechSynthesisUtterance(text))
 
         const distance = (a, b) => {
             const square = n => Math.pow(n, 2)
@@ -60,6 +61,11 @@
             output.innerText += `----Total Dist: ${totalDistance.toFixed(2)} km\n`
             output.innerText += `-Average Speed: ${(totalDistance / totaltime * 60).toFixed(2)} km/min\n`
             output.innerText += `--Average Pace: ${(1 / (totalDistance / totaltime * 60)).toFixed(2)} min/km\n`
+
+            if (totalDistance >= nextUpdate) {
+                speak((1 / (totalDistance / totaltime * 60)).toFixed(2))
+                nextUpdate += updateFreqKm
+            }
         }
 
         const action = () => {
@@ -68,14 +74,18 @@
                 btn.textContent = "Stop"
                 state = "tracking"
                 positions = []
+                nextUpdate = updateFreqKm
+                totalDistance = 0
                 gps = navigator.geolocation.watchPosition(pos => {
                     handleReading({ lat: pos.coords.latitude, lon: pos.coords.longitude, time: pos.timestamp })
                 })
+                speak("starting run")
             }
             else if (state == "tracking") {
                 btn.textContent = "Start"
                 state = "stopped"
                 navigator.geolocation.clearWatch(gps)
+                speak("stopping run")
             }
         }
     </script>
