@@ -15,8 +15,12 @@
 </head>
 
 <body>
+    <div id="output"></div>
+    <button id="action" onclick="action()">Start</button>
     <script>
-        const positions = []
+        let state = "stopped"
+        let gps = 0
+        let positions = []
         let totalDistance = 0
 
         const distance = (a, b) => {
@@ -47,19 +51,33 @@
 
             const totaltime = (positions[positions.length - 1].time - positions[0].time) / 1000
 
-            document.body.innerText = ''
-            document.body.innerText += `Last Time Diff: ${dt.toFixed(2)} seconds\n`
-            document.body.innerText += `Last Dist Diff: ${dp} km\n`
-            document.body.innerText += `\n`
-            document.body.innerText += `----Total Time: ${totaltime.toFixed(2)} seconds\n`
-            document.body.innerText += `----Total Dist: ${totalDistance.toFixed(2)} km\n`
-            document.body.innerText += `-Average Speed: ${(totalDistance / totaltime * 60).toFixed(2)} km/min\n`
-            document.body.innerText += `--Average Pace: ${(1 / (totalDistance / totaltime * 60)).toFixed(2)} min/km\n`
+            const output = document.querySelector("#output")
+            output.innerText = ''
+            output.innerText += `Last Time Diff: ${dt.toFixed(2)} seconds\n`
+            output.innerText += `Last Dist Diff: ${dp} km\n`
+            output.innerText += `\n`
+            output.innerText += `----Total Time: ${totaltime.toFixed(2)} seconds\n`
+            output.innerText += `----Total Dist: ${totalDistance.toFixed(2)} km\n`
+            output.innerText += `-Average Speed: ${(totalDistance / totaltime * 60).toFixed(2)} km/min\n`
+            output.innerText += `--Average Pace: ${(1 / (totalDistance / totaltime * 60)).toFixed(2)} min/km\n`
         }
 
-        navigator.geolocation.watchPosition(pos => {
-            handleReading({ lat: pos.coords.latitude, lon: pos.coords.longitude, time: pos.timestamp })
-        })
+        const action = () => {
+            const btn = document.querySelector("#action")
+            if (state == "stopped") {
+                btn.textContent = "Stop"
+                state = "tracking"
+                positions = []
+                gps = navigator.geolocation.watchPosition(pos => {
+                    handleReading({ lat: pos.coords.latitude, lon: pos.coords.longitude, time: pos.timestamp })
+                })
+            }
+            else if (state == "tracking") {
+                btn.textContent = "Start"
+                state = "stopped"
+                navigator.geolocation.clearWatch(gps)
+            }
+        }
     </script>
 </body>
 
