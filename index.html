@@ -90,10 +90,10 @@
             document.querySelector("#total_time").innerText = `${secondsToMinutes(totaltime)}`
             document.querySelector("#total_dist").innerText = `${totalDistance.toFixed(2)} km`
             document.querySelector("#avg_speed").innerText = `${avgSpeed.toFixed(2)} km/min`
-            document.querySelector("#avg_pace").innerText = `${secondsToMinutes(1 / avgSpeed)} min/km`
+            document.querySelector("#avg_pace").innerText = `${secondsToMinutes(1 / avgSpeed * 60)} min/km`
 
             if (totalDistance >= nextUpdate) {
-                speak(secondsToMinutes(1 / avgSpeed))
+                speak(secondsToMinutes(1 / avgSpeed * 60))
                 nextUpdate += updateFreqKm
             }
         }
