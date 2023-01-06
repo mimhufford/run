@@ -8,14 +8,45 @@
     <title>Run</title>
     <style>
         * {
-            font-family: monospace;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: black;
+            color: white;
+            text-align: center;
+        }
+
+        h2 {
+            font-size: medium;
+            padding-top: 0.5em;
+            margin-bottom: 0;
+        }
+
+        div {
             font-size: xx-large;
+            padding-bottom: 0.5em;
+        }
+
+        button {
+            font-size: xx-large;
+            padding: 1em 5em;
+            margin-top: 1em;
+            border: 1px solid white;
         }
     </style>
 </head>
 
 <body>
-    <div id="output"></div>
+    <h2>Last Time Difference</h2>
+    <div id="last_time_diff"></div>
+    <h2>Last Distance Difference</h2>
+    <div id="last_dist_diff"></div>
+    <h2>Total Time</h2>
+    <div id="total_time"></div>
+    <h2>Total Distance</h2>
+    <div id="total_dist"></div>
+    <h2>Average Speed</h2>
+    <div id="avg_speed"></div>
+    <h2>Average Pace</h2>
+    <div id="avg_pace"></div>
     <button id="action" onclick="action()">Start</button>
     <script>
         let state = "stopped"
@@ -51,15 +82,12 @@
 
             const totaltime = (positions[positions.length - 1].time - positions[0].time) / 1000
 
-            const output = document.querySelector("#output")
-            output.innerText = ''
-            output.innerText += `Last Time Diff: ${dt.toFixed(2)} seconds\n`
-            output.innerText += `Last Dist Diff: ${dp} km\n`
-            output.innerText += `\n`
-            output.innerText += `----Total Time: ${totaltime.toFixed(2)} seconds\n`
-            output.innerText += `----Total Dist: ${totalDistance.toFixed(2)} km\n`
-            output.innerText += `-Average Speed: ${(totalDistance / totaltime * 60).toFixed(2)} km/min\n`
-            output.innerText += `--Average Pace: ${(1 / (totalDistance / totaltime * 60)).toFixed(2)} min/km\n`
+            document.querySelector("#last_time_diff").innerText = `${dt.toFixed(2)} seconds`
+            document.querySelector("#last_dist_diff").innerText = `${(dp * 1000).toFixed(2)} metres`
+            document.querySelector("#total_time").innerText = `${totaltime.toFixed(2)} seconds\n`
+            document.querySelector("#total_dist").innerText = `${totalDistance.toFixed(2)} km\n`
+            document.querySelector("#avg_speed").innerText = `${(totalDistance / totaltime * 60).toFixed(2)} km/min\n`
+            document.querySelector("#avg_pace").innerText = `${(1 / (totalDistance / totaltime * 60)).toFixed(2)} min/km\n`
         }
 
         const action = () => {
