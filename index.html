@@ -53,6 +53,7 @@
         let gps, positions, totalDistance, nextUpdate
         const updateFreqKm = 0.1
 
+        const secondsToMinutes = s => `${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, '0')}`;
         const speak = text => window.speechSynthesis.speak(new SpeechSynthesisUtterance(text))
 
         const distance = (a, b) => {
@@ -77,21 +78,22 @@
             // calculate delta between last two readings
             const a = positions[positions.length - 1]
             const b = positions[positions.length - 2]
-            const dt = (a.time - b.time) / 1000
-            const dp = distance(a, b)
-            totalDistance += dp
+            const diff_time = (a.time - b.time) / 1000
+            const diff_dist = distance(a, b)
+            totalDistance += diff_dist
 
             const totaltime = (positions[positions.length - 1].time - positions[0].time) / 1000
+            const avgSpeed = totalDistance / totaltime * 60
 
-            document.querySelector("#last_time_diff").innerText = `${dt.toFixed(2)} seconds`
-            document.querySelector("#last_dist_diff").innerText = `${(dp * 1000).toFixed(2)} metres`
-            document.querySelector("#total_time").innerText = `${totaltime.toFixed(2)} seconds\n`
-            document.querySelector("#total_dist").innerText = `${totalDistance.toFixed(2)} km\n`
-            document.querySelector("#avg_speed").innerText = `${(totalDistance / totaltime * 60).toFixed(2)} km/min\n`
-            document.querySelector("#avg_pace").innerText = `${(1 / (totalDistance / totaltime * 60)).toFixed(2)} min/km\n`
+            document.querySelector("#last_time_diff").innerText = `${diff_time.toFixed(2)} seconds`
+            document.querySelector("#last_dist_diff").innerText = `${(diff_dist * 1000).toFixed(2)} metres`
+            document.querySelector("#total_time").innerText = `${secondsToMinutes(totaltime)}`
+            document.querySelector("#total_dist").innerText = `${totalDistance.toFixed(2)} km`
+            document.querySelector("#avg_speed").innerText = `${avgSpeed.toFixed(2)} km/min`
+            document.querySelector("#avg_pace").innerText = `${secondsToMinutes(1 / avgSpeed)} min/km`
 
             if (totalDistance >= nextUpdate) {
-                speak((1 / (totalDistance / totaltime * 60)).toFixed(2))
+                speak(secondsToMinutes(1 / avgSpeed))
                 nextUpdate += updateFreqKm
             }
         }
