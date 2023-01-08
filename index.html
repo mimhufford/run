@@ -108,7 +108,7 @@
                 totalDistance = 0
                 gps = navigator.geolocation.watchPosition(pos => {
                     handleReading({ lat: pos.coords.latitude, lon: pos.coords.longitude, time: pos.timestamp })
-                })
+                }, console.error, { enableHighAccuracy: true })
                 speak("starting run")
             }
             else if (state == "tracking") {
