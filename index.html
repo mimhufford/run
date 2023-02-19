@@ -94,8 +94,9 @@
             document.querySelector("#avg_pace").innerText = `${secondsToMinutes(1 / avgSpeed * 60)} min/km`
 
             if (splitDistance >= updateFreqKm) {
-                const splitAvgSpeed = splitDistance / (a.time - splitLastTime)
-                speak(secondsToMinutes(splitAvgSpeed))
+                const splitAvgSpeed = splitDistance / (a.time - splitLastTime) * 60
+                const splitAvgPace  = 1 / splitAvgSpeed * 60
+                speak(secondsToMinutes(splitAvgPace))
                 splitDistance -= updateFreqKm
                 splitLastTime = a.time
             }
