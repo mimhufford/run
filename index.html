@@ -50,7 +50,7 @@
     <button id="action" onclick="action()">Start</button>
     <script>
         let state = "stopped"
-        let gps, positions, totalDistance, nextUpdate
+        let gps, positions, totalDistance, splitDistance, splitLastTime
         const updateFreqKm = 0.1
 
         const secondsToMinutes = s => `${Math.floor(s / 60)}:${Math.floor(s % 60).toString().padStart(2, '0')}`;
@@ -81,6 +81,7 @@
             const diff_time = (a.time - b.time) / 1000
             const diff_dist = distance(a, b)
             totalDistance += diff_dist
+            splitDistance += diff_dist
 
             const totaltime = (positions[positions.length - 1].time - positions[0].time) / 1000
             const avgSpeed = totalDistance / totaltime * 60
@@ -92,9 +93,11 @@
             document.querySelector("#avg_speed").innerText = `${avgSpeed.toFixed(2)} km/min`
             document.querySelector("#avg_pace").innerText = `${secondsToMinutes(1 / avgSpeed * 60)} min/km`
 
-            if (totalDistance >= nextUpdate) {
-                speak(secondsToMinutes(1 / avgSpeed * 60))
-                nextUpdate += updateFreqKm
+            if (splitDistance >= updateFreqKm) {
+                const splitAvgSpeed = splitDistance / (a.time - splitLastTime)
+                speak(secondsToMinutes(splitAvgSpeed))
+                splitDistance -= updateFreqKm
+                splitLastTime = a.time
             }
         }
 
@@ -104,8 +107,9 @@
                 btn.textContent = "Stop"
                 state = "tracking"
                 positions = []
-                nextUpdate = updateFreqKm
                 totalDistance = 0
+                splitDistance = 0
+                splitLastTime = 0
                 gps = navigator.geolocation.watchPosition(pos => {
                     handleReading({ lat: pos.coords.latitude, lon: pos.coords.longitude, time: pos.timestamp })
                 }, console.error, { enableHighAccuracy: true })
